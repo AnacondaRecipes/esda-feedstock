@@ -38,6 +38,8 @@ about:
   license: BSD-3-Clause
   license_file: LICENSE
   summary: Exploratory Spatial Data Analysis
+  dev_url: https://github.com/pysal/esda
+  doc_url: https://pysal.org/esda/
 
 extra:
   recipe-maintainers:
