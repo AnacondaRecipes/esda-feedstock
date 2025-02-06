@@ -8,8 +8,6 @@ package:
 source:
   url: https://github.com/pysal/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: 8557fd5da1d7ee23cdcc8cb8f83ab8e772f7200b647303f3b0bb8836ae19fe9e
-  patches:
-    - patches/0001-scipy-upper-bound-added.patch
 
 build:
   number: 0
@@ -21,9 +19,6 @@ build:
   skip: True  # [py<38 or py>312]
 
 requirements:
-  build: 
-    - patch  # [not win]
-    - m2-patch  # [win]
   host:
     - python
     - wheel
@@ -70,7 +65,7 @@ test:
     - esda
   commands:
     - pip check
-    - pytest -v -k "not ({{ tests_to_skip }})" esda/tests  # [py<313 and not (linux and s390x)]
+    - pytest -v -k "not ({{ tests_to_skip }})" esda/tests  # [not (linux and s390x)]
   requires:
     - pip
     - pytest
@@ -78,11 +73,11 @@ test:
     # E AttributeError: module 'fiona' has no attribute 'path'
     # So upgrading geopandas to 0.14.4 should fix it.
     # But latest geopandas we have is 0.14.2, so we need to forcing fiona to stay on version <1.10 should also work.
-    - fiona <1.10  # [py<313 and not (linux and s390x)]
+    - fiona <1.10  # [not (linux and s390x)]
     # AttributeError: module 'shapely' has no attribute 'from_wkt'
     # sharpely must be >=2.0
     - shapely >=2.0  # [not (linux and s390x)]
-    - numba  # [py<313 and not (linux and s390x)]
+    - numba  # [not (linux and s390x)]
 
 about:
   home: https://github.com/pysal/esda
