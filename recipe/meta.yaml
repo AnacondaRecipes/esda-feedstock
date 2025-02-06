@@ -18,7 +18,7 @@ build:
   # scipy >=1.9,<1.12 is not avaliable on py313
   # libpysal is not avaliable for py39
   # s390x skipped: geopandas, fiona, shapely, and numba is not avaliable and we can`t test is it works at all.
-  skip: True  # [py<39 or py>312]
+  skip: True  # [py<310 or py>312]
 
 requirements:
   host:
