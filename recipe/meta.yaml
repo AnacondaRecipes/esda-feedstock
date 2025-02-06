@@ -80,7 +80,7 @@ test:
     - numba  # [not (linux and s390x)]
 
 about:
-  home: https://github.com/pysal/esda
+  home: https://pysal.org/esda/
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt
