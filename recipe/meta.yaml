@@ -17,7 +17,8 @@ build:
   # Need to avoid error: setuptools-scm was unable to detect version !!!
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
-  skip: True  # [py<38]
+  # scipy >=1.9,<1.12 is not avaliable on py313
+  skip: True  # [py<38 or py>312]
 
 requirements:
   build: 
@@ -69,19 +70,19 @@ test:
     - esda
   commands:
     - pip check
-    - pytest -v -k "not ({{ tests_to_skip }})" esda/tests  # [py<313]
+    - pytest -v -k "not ({{ tests_to_skip }})" esda/tests  # [py<313 and not (linux and s390x)]
   requires:
     - pip
     - pytest
-    - geopandas >=0.7.0  
+    - geopandas >=0.7.0  # [not (linux and s390x)]
     # E AttributeError: module 'fiona' has no attribute 'path'
     # So upgrading geopandas to 0.14.4 should fix it.
     # But latest geopandas we have is 0.14.2, so we need to forcing fiona to stay on version <1.10 should also work.
-    - fiona <1.10  # [py<313]
+    - fiona <1.10  # [py<313 and not (linux and s390x)]
     # AttributeError: module 'shapely' has no attribute 'from_wkt'
     # sharpely must be >=2.0
-    - shapely >=2.0
-    - numba  # [py<313]
+    - shapely >=2.0  # [not (linux and s390x)]
+    - numba  # [py<313 and not (linux and s390x)]
 
 about:
   home: https://github.com/pysal/esda
