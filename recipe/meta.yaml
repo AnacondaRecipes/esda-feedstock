@@ -17,8 +17,9 @@ build:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   # scipy >=1.9,<1.12 is not avaliable on py313
   # libpysal is not avaliable for py39
-  # s390x skipped: geopandas, fiona, shapely, and numba is not avaliable and we can`t test is it works at all.
   skip: True  # [py<310 or py>312]
+  # s390x skipped: geopandas, fiona, shapely, and numba is not avaliable and we can`t test is it works at all.
+  skip: True  # [s390x]
 
 requirements:
   host:
