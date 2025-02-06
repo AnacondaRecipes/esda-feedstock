@@ -69,7 +69,7 @@ test:
     - esda
   commands:
     - pip check
-    - pytest -v -k "not ({{ tests_to_skip }})" esda/tests
+    - pytest -v -k "not ({{ tests_to_skip }})" esda/tests  # [py<313]
   requires:
     - pip
     - pytest
@@ -77,11 +77,11 @@ test:
     # E AttributeError: module 'fiona' has no attribute 'path'
     # So upgrading geopandas to 0.14.4 should fix it.
     # But latest geopandas we have is 0.14.2, so we need to forcing fiona to stay on version <1.10 should also work.
-    - fiona <1.10
+    - fiona <1.10  # [py<313]
     # AttributeError: module 'shapely' has no attribute 'from_wkt'
     # sharpely must be >=2.0
     - shapely >=2.0
-    - numba
+    - numba  # [py<313]
 
 about:
   home: https://github.com/pysal/esda
