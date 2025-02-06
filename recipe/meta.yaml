@@ -75,7 +75,7 @@ test:
     # But latest geopandas we have is 0.14.2, so we need to forcing fiona to stay on version <1.10 should also work.
     - fiona <1.10  # [not (linux and s390x)]
     # AttributeError: module 'shapely' has no attribute 'from_wkt'
-    # sharpely must be >=2.0
+    # shapely must be >=2.0
     - shapely >=2.0  # [not (linux and s390x)]
     - numba  # [not (linux and s390x)]
 
