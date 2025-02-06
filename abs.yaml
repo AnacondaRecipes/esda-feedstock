@@ -1,0 +1,2 @@
+channels:
+  - https://staging.continuum.io/prefect/fs/libpysal-feedstock/pr6/f1cefa4 # libpysal 4.10

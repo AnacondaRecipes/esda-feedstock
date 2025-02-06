@@ -16,7 +16,9 @@ build:
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   # scipy >=1.9,<1.12 is not avaliable on py313
-  skip: True  # [py<38 or py>312]
+  # libpysal is not avaliable for py39
+  # s390x skipped: geopandas, fiona, shapely, and numba is not avaliable and we can`t test is it works at all.
+  skip: True  # [py<39 or py>312]
 
 requirements:
   host:
@@ -27,7 +29,7 @@ requirements:
     - pip
   run:
     - python
-    - libpysal
+    - libpysal >=4.10
     - pandas >1.4
     - scikit-learn >=1.0
     # Build error appears:
@@ -36,27 +38,16 @@ requirements:
     # Changed upstream scipy >=1.9 on >=1.9,<1.12
     - scipy >=1.9,<1.12
 
+# Issue created: https://github.com/pysal/esda/issues/361
 # Tests fails on :
 # - py>39
 #     E   FloatingPointError: invalid value encountered in voronoi_polygons
-# - py<=39
-#     TypeError: float() argument must be a string or a number, not 'Point'
+{% set tests_to_skip = "" %}
 {% set tests_to_skip = "test_isolation_options" %}
 {% set tests_to_skip = tests_to_skip + " or test_isolation_valid" %}
 {% set tests_to_skip = tests_to_skip + " or test_prominence_options" %}
 {% set tests_to_skip = tests_to_skip + " or test_prominence_valid" %}
 {% set tests_to_skip = tests_to_skip + " or test_to_elevation" %}
-
-
-# E to_adjlist() got an unexpected keyword argument 'drop_islands'
-{% set tests_to_skip = tests_to_skip + " or test_silhouette_alist" %}  # [py<=39]
-{% set tests_to_skip = tests_to_skip + " or test_boundary" %}  # [py<=39]
-{% set tests_to_skip = tests_to_skip + " or test_local_geary" %}  # [py<=39]
-{% set tests_to_skip = tests_to_skip + " or test_Local_Join_Counts_MV" %}  # [py<=39]
-{% set tests_to_skip = tests_to_skip + " or test_Local_Join_Counts_BV" %}  # [py<=39]
-{% set tests_to_skip = tests_to_skip + " or test_Join_Counts_Locals" %}  # [py<=39]
-{% set tests_to_skip = tests_to_skip + " or test_by_col" %}  # [py<=39]
-{% set tests_to_skip = tests_to_skip + " or test_Join_Counts" %}  # [py<=39]
 
 test:
   source_files:
@@ -65,11 +56,13 @@ test:
     - esda
   commands:
     - pip check
+    # check that pip gets the correct version
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     - pytest -v -k "not ({{ tests_to_skip }})" esda/tests  # [not (linux and s390x)]
   requires:
     - pip
     - pytest
-    - geopandas >=0.7.0  # [not (linux and s390x)]
+    - geopandas  # [not (linux and s390x)]
     # E AttributeError: module 'fiona' has no attribute 'path'
     # So upgrading geopandas to 0.14.4 should fix it.
     # But latest geopandas we have is 0.14.2, so we need to forcing fiona to stay on version <1.10 should also work.
