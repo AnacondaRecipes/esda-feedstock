@@ -36,8 +36,8 @@ requirements:
     # Build error appears:
     # E cannot import name 'inf' from 'scipy'
     # The issue is likely due to the fact that Scipy removed scipy.inf in recent versions (starting from 1.13).
-    # Changed upstream scipy >=1.9 on >=1.9,<1.12
-    - scipy >=1.9,<1.12
+    # Changed upstream scipy >=1.9 on >=1.9,<1.13a0
+    - scipy >=1.9,<1.13a0
 
 # Issue created: https://github.com/pysal/esda/issues/361
 # Tests fails on :
