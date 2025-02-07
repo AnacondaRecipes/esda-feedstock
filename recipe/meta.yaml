@@ -8,6 +8,8 @@ package:
 source:
   url: https://github.com/pysal/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: 8557fd5da1d7ee23cdcc8cb8f83ab8e772f7200b647303f3b0bb8836ae19fe9e
+  patches:
+    - patches/0001-tests-must-use-absolute-path.patch
 
 build:
   number: 0
@@ -22,6 +24,9 @@ build:
   skip: True  # [s390x]
 
 requirements:
+  build:
+    - patch  # [not win]
+    - m2-patch  # [win]
   host:
     - python
     - wheel
@@ -52,7 +57,7 @@ requirements:
 
 test:
   source_files:
-    - esda
+    - esda/tests
   imports:
     - esda
   commands:
