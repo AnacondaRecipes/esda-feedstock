@@ -65,7 +65,7 @@ test:
     # check that pip gets the correct version
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     # Target osx-64 is not work right now. Please remove not (osx and x86_64) next time.
-    - pytest -v -k "not ({{ tests_to_skip }})" esda/tests  # [not (linux and s390x) and not (osx and x86_64)]
+    - pytest -v -k "not ({{ tests_to_skip }})" esda/tests  # [not (linux and s390x)]
   requires:
     - pip
     - pytest
@@ -78,6 +78,7 @@ test:
     # shapely must be >=2.0
     - shapely >=2.0  # [not (linux and s390x)]
     - numba  # [not (linux and s390x)]
+    - python <3.12.9
 
 about:
   home: https://pysal.org/esda/
