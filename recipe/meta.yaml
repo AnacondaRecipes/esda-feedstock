@@ -55,6 +55,14 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_prominence_valid" %}
 {% set tests_to_skip = tests_to_skip + " or test_to_elevation" %}
 
+# Only on osx-64
+# $PREFIX/lib/python3.12/site-packages/joblib/parallel.py:763: BrokenProcessPool
+# ----------------------------- Captured stderr call -----------------------------
+# Fatal Python error: init_sys_streams: can't initialize sys standard streams
+# Python runtime state: core initialized
+# OSError: [Errno 9] Bad file descriptor
+{% set tests_to_skip = tests_to_skip + " or G_Local_Tester" %}  # [osx and x86_64]
+
 test:
   source_files:
     - esda/tests/regions.zip
@@ -69,7 +77,8 @@ test:
     # ERROR tests/test_map_comparison.py - fiona.errors.DriverError: '/vsizip//User...
     # !!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
     # E   fiona._err.CPLE_OpenFailedError: '/vsizip/$PREFIX/lib/python3.10/site-packages/esda/tests/regions.zip' does not exist in the file system, and is not recognized as a supported dataset name.
-    - cp esda/tests/regions.zip ${SP_DIR}/esda/tests/
+    - cp esda/tests/regions.zip ${SP_DIR}/esda/tests/  # [not win]
+    - cp esda/tests/regions.zip %SP_DIR%/esda/tests/  # [win]
     - pytest --pyargs esda.tests -v -k "not ({{ tests_to_skip }})"  # [not (linux and s390x)]
   requires:
     - pip
