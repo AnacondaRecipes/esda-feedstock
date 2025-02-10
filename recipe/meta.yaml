@@ -62,7 +62,7 @@ requirements:
 # Python runtime state: core initialized
 # OSError: [Errno 9] Bad file descriptor
 {% set ignore_tests = "" %}
-{% set ignore_tests = " --ignore=esda/tests/test_getisord.py" %}  # [osx and x86_64]
+{% set ignore_tests = " --ignore=${SP_DIR}/esda/tests/test_getisord.py" %}  # [osx and x86_64]
 
 test:
   source_files:
