@@ -57,15 +57,20 @@ requirements:
 
 test:
   source_files:
-    - esda/tests
+    - esda/tests/regions.zip
   imports:
     - esda
   commands:
     - pip check
     # check that pip gets the correct version
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    # Target osx-64 is not work right now. Please remove not (osx and x86_64) next time.
-    - pytest -v -k "not ({{ tests_to_skip }})" esda/tests  # [not (linux and s390x)]
+    # For some reason regions.zip is not copying to the test directory in the site-package.
+    # =========================== short test summary info ============================
+    # ERROR tests/test_map_comparison.py - fiona.errors.DriverError: '/vsizip//User...
+    # !!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+    # E   fiona._err.CPLE_OpenFailedError: '/vsizip/$PREFIX/lib/python3.10/site-packages/esda/tests/regions.zip' does not exist in the file system, and is not recognized as a supported dataset name.
+    - cp esda/tests/regions.zip ${SP_DIR}/esda/tests/
+    - pytest --pyargs esda.tests -v -k "not ({{ tests_to_skip }})"  # [not (linux and s390x)]
   requires:
     - pip
     - pytest
@@ -78,7 +83,6 @@ test:
     # shapely must be >=2.0
     - shapely >=2.0  # [not (linux and s390x)]
     - numba  # [not (linux and s390x)]
-    - python <3.12.9
 
 about:
   home: https://pysal.org/esda/
