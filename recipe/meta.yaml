@@ -61,6 +61,7 @@ requirements:
 # Fatal Python error: init_sys_streams: can't initialize sys standard streams
 # Python runtime state: core initialized
 # OSError: [Errno 9] Bad file descriptor
+{% set ignore_tests = "" %}
 {% set ignore_tests = " --ignore=test_getisord.py" %}  # [osx and x86_64]
 
 test:
@@ -79,8 +80,7 @@ test:
     # E   fiona._err.CPLE_OpenFailedError: '/vsizip/$PREFIX/lib/python3.10/site-packages/esda/tests/regions.zip' does not exist in the file system, and is not recognized as a supported dataset name.
     - cp esda/tests/regions.zip ${SP_DIR}/esda/tests/  # [not win]
     - cp esda/tests/regions.zip %SP_DIR%/esda/tests/  # [win]
-    - pytest --pyargs esda.tests -v -k "not ({{ tests_to_skip }})"  # [not (linux and s390x) and not (osx and x86_64)]
-    - pytest --pyargs esda.tests -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})"  # [osx and x86_64]
+    - pytest --pyargs esda.tests -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})"  # [not (linux and s390x)]
   requires:
     - pip
     - pytest
