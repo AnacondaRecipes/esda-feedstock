@@ -19,7 +19,7 @@ build:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   # scipy >=1.9,<1.12 is not avaliable on py313
   # libpysal is not avaliable for py39
-  skip: True  # [py<310 or py>312]
+  skip: True  # [py<39 or py>312]
   # s390x skipped: geopandas, fiona, shapely, and numba is not avaliable and we can`t test is it works at all.
   skip: True  # [s390x]
 
@@ -35,14 +35,15 @@ requirements:
     - pip
   run:
     - python
-    - libpysal >=4.10
+    - libpysal
+    - libpysal >=4.10  # [py>39]
     - pandas >1.4
     - scikit-learn >=1.0
     # Build error appears:
     # E cannot import name 'inf' from 'scipy'
     # The issue is likely due to the fact that Scipy removed scipy.inf in recent versions (starting from 1.13).
     # Changed upstream scipy >=1.9 on >=1.9,<1.13a0
-    - scipy >=1.9,<1.13a0
+    - scipy >=0.11,<1.12a0  # [py<310]
 
 # Issue created: https://github.com/pysal/esda/issues/361
 # Tests fails on :
