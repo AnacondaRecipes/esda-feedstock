@@ -45,6 +45,9 @@ requirements:
     # Changed upstream scipy >=1.9 on >=1.9,<1.13a0
     - scipy >=0.11
     - scipy >=0.11,<1.12a0  # [py<310]
+  run_constrained:
+    # force to use openblas variant of numpy, scipy, etc.
+    - blas=*=openblas  # [osx and x86_64]
 
 # Issue created: https://github.com/pysal/esda/issues/361
 # Tests fails on :
