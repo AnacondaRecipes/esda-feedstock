@@ -1,5 +1,5 @@
 {% set name = "esda" %}
-{% set version = "2.5.1" %}
+{% set version = "2.7.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,21 +7,14 @@ package:
 
 source:
   url: https://github.com/pysal/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 8557fd5da1d7ee23cdcc8cb8f83ab8e772f7200b647303f3b0bb8836ae19fe9e
-  patches:
-    - patches/0001-tests-must-use-absolute-path.patch
+  sha256: 46d6abd6f2154ee1abf3d7983d0e2edd53fc3138f43cb71769a2114967747085
 
 build:
-  number: 1
+  number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  # Need to avoid error: setuptools-scm was unable to detect version !!!
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
-  # scipy >=1.9,<1.12 is not avaliable on py313
-  # libpysal is not avaliable for py39
-  skip: True  # [py<39 or py>312]
-  # s390x skipped: geopandas, fiona, shapely, and numba is not avaliable and we can`t test is it works at all.
-  skip: True  # [s390x]
+  skip: True  # [py<310]
 
 requirements:
   build:
@@ -31,57 +24,30 @@ requirements:
     - python
     - wheel
     - setuptools >=61.0
+    # setuptools_scm[toml] >=6.2
     - setuptools_scm >=6.2
+    - toml
     - pip
   run:
     - python
-    - libpysal
-    - libpysal >=4.10  # [py>39]
-    - pandas >1.4
-    - scikit-learn >=1.0
-    # Build error appears:
-    # E cannot import name 'inf' from 'scipy'
-    # The issue is likely due to the fact that Scipy removed scipy.inf in recent versions (starting from 1.13).
-    # Changed upstream scipy >=1.9 on >=1.9,<1.13a0
+    - geopandas >=0.12
+    - libpysal >=4.12
+    - numpy >=1.24
+    - pandas >1.5
+    - scikit-learn >=1.2
     - scipy >=1.9
-    - scipy >=1.9,<1.12a0  # [py<310]
-  run_constrained:
-    # force to use openblas variant of numpy, scipy, etc.
-    - blas=*=openblas  # [osx and x86_64]
-    - fiona <1.9  # [py<310]
-    - geopandas >=1.0  # [py>39]
     - shapely >=2.0
+  run_constrained:
+    - blas=*=openblas  # [osx and x86_64]
 
 # Issue created: https://github.com/pysal/esda/issues/361
-# Tests fails on :
-# - py>39
-#     E   FloatingPointError: invalid value encountered in voronoi_polygons
-{% set tests_to_skip = "" %}
-{% set tests_to_skip = "test_isolation_options" %}
-{% set tests_to_skip = tests_to_skip + " or test_isolation_valid" %}
-{% set tests_to_skip = tests_to_skip + " or test_prominence_options" %}
-{% set tests_to_skip = tests_to_skip + " or test_prominence_valid" %}
-{% set tests_to_skip = tests_to_skip + " or test_to_elevation" %}
+# E   FloatingPointError: invalid value encountered in voronoi_polygons
+{% set deselect_tests = " --deselect=test_topo.py::TestTopo::test_prominence_valid" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_topo.py::TestTopo::test_prominence_options" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_topo.py::TestTopo::test_isolation_options" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_topo.py::TestTopo::test_isolation_valid" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_topo.py::TestTopo::test_to_elevation" %}
 
-# Only on osx-64 all getisord tests failed
-# $PREFIX/lib/python3.12/site-packages/joblib/parallel.py:763: BrokenProcessPool
-# ----------------------------- Captured stderr call -----------------------------
-# Fatal Python error: init_sys_streams: can't initialize sys standard streams
-# Python runtime state: core initialized
-# OSError: [Errno 9] Bad file descriptor
-{% set ignore_tests = "" %}
-{% set ignore_tests = " --ignore=${SP_DIR}/esda/tests/test_getisord.py" %}  # [osx and x86_64]
-{% set tests_to_skip = tests_to_skip + " or test_Moran_Local_parallel" %}  # [osx and x86_64]
-
-# E to_adjlist() got an unexpected keyword argument 'drop_islands'
-{% set tests_to_skip = tests_to_skip + " or test_silhouette_alist" %}  # [py<310]
-{% set tests_to_skip = tests_to_skip + " or test_boundary" %}  # [py<310]
-{% set tests_to_skip = tests_to_skip + " or test_local_geary" %}  # [py<310]
-{% set tests_to_skip = tests_to_skip + " or test_Local_Join_Counts_MV" %}  # [py<310]
-{% set tests_to_skip = tests_to_skip + " or test_Local_Join_Counts_BV" %}  # [py<310]
-{% set tests_to_skip = tests_to_skip + " or test_Join_Counts_Locals" %}  # [py<310]
-{% set tests_to_skip = tests_to_skip + " or test_by_col" %}  # [py<310]
-{% set tests_to_skip = tests_to_skip + " or test_Join_Counts" %}  # [py<310]
 
 test:
   source_files:
@@ -90,31 +56,17 @@ test:
     - esda
   commands:
     - pip check
-    # check that pip gets the correct version
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     # For some reason regions.zip is not copying to the test directory in the site-package.
-    # =========================== short test summary info ============================
-    # ERROR tests/test_map_comparison.py - fiona.errors.DriverError: '/vsizip//User...
-    # !!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
-    # E   fiona._err.CPLE_OpenFailedError: '/vsizip/$PREFIX/lib/python3.10/site-packages/esda/tests/regions.zip' does not exist in the file system, and is not recognized as a supported dataset name.
     - cp esda/tests/regions.zip ${SP_DIR}/esda/tests/  # [not win]
     - cp esda/tests/regions.zip %SP_DIR%/esda/tests/  # [win]
-    - pytest --pyargs esda.tests -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})"  # [not (linux and s390x)]
+    - pytest --pyargs esda.tests {{ deselect_tests }}
   requires:
     - pip
     - pytest
-    - geopandas  # [not (linux and s390x)]
-    # E AttributeError: module 'fiona' has no attribute 'path'
-    # So upgrading geopandas to 0.14.4 should fix it.
-    # But latest geopandas we have is 0.14.2, so we need to forcing fiona to stay on version <1.10 should also work.
-    - fiona  # [not (linux and s390x)]
-    # AttributeError: module 'shapely' has no attribute 'from_wkt'
-    # shapely must be >=2.0
-    - shapely  # [not (linux and s390x)]
-    - numba  # [not (linux and s390x)]
 
 about:
-  home: https://pysal.org/esda/
+  home: https://pysal.org/esda
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt
@@ -123,7 +75,7 @@ about:
     ESDA is an open-source Python library for the exploratory analysis of spatial data. 
     A subpackage of PySAL (Python Spatial Analysis Library), it is under active development and includes methods for global and local spatial autocorrelation analysis.
   dev_url: https://github.com/pysal/esda
-  doc_url: https://pysal.org/esda/
+  doc_url: https://pysal.org/esda
 
 extra:
   recipe-maintainers:
