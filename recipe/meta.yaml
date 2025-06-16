@@ -36,6 +36,8 @@ requirements:
     - shapely >=2.0
   run_constrained:
     - blas=*=openblas  # [osx and x86_64]
+    - numba >=0.57
+    - rtree >=1.0
 
 # Issue created: https://github.com/pysal/esda/issues/361
 # E   FloatingPointError: invalid value encountered in voronoi_polygons
