@@ -9,20 +9,25 @@ source:
   sha256: 308b43cdc2f7af9b01c4a71fb1869092d48bcdf953e99dba8fc8239745779f1e
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed --no-build-isolation . -vv
+  skip: True  # [py<34]
 
 requirements:
   host:
     - python
     - pip
+    - wheel
   run:
     - python >3.4
     - libpysal
     - pandas
     - scikit-learn
-    - scipy >=0.11
+    # 1.8.0 upperbound needs to fix scikit-learn 1.7.0 compatibility.
+    # ImportError: cannot import name 'inf' from 'scipy'
+    # Scipy removed scipy.inf starting from 1.8
+    - scipy >=0.11,<1.8.0
 
 test:
   imports:
@@ -36,11 +41,15 @@ test:
 about:
   home: https://github.com/pysal/esda
   license: BSD-3-Clause
+  license_family: BSD
   license_file: LICENSE
   summary: Exploratory Spatial Data Analysis
+  description: Methods for testing for global and local autocorrelation in areal unit data.
   dev_url: https://github.com/pysal/esda
-  doc_url: https://pysal.org/esda/
+  doc_url: https://pysal.org/esda
 
 extra:
   recipe-maintainers:
     - ocefpaf
+  skip-lints:
+    - avoid_noarch
