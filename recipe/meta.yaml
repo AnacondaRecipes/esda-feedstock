@@ -36,7 +36,7 @@ requirements:
     - shapely >=2.1
   run_constrained:
     - blas=*=openblas  # [osx and x86_64]
-    - matplotlib>=3.8
+    - matplotlib-base >=3.8
     - numba >=0.58
     - rtree >=1.1
     - seaborn >=0.12
