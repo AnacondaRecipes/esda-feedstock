@@ -49,6 +49,9 @@ requirements:
 {% set deselect_tests = deselect_tests + " --deselect=test_topo.py::TestTopo::test_isolation_valid" %}
 {% set deselect_tests = deselect_tests + " --deselect=test_topo.py::TestTopo::test_to_elevation" %}
 
+# Test imports 'geodatasets' package which we don't have available
+{% set deselect_tests = deselect_tests + " --ignore=test_moran_local_mv.py" %}
+
 
 test:
   source_files:
