@@ -62,8 +62,8 @@ test:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     # For some reason regions.zip is not copying to the test directory in the site-package.
-    - cp   esda/tests/regions.zip ${SP_DIR}/esda/tests/  # [not win]
-    - copy esda/tests/regions.zip %SP_DIR%/esda/tests/  # [win]
+    - cp   esda/tests/regions.zip {{ test_path }}  # [not win]
+    - copy esda\tests\regions.zip {{ test_path }}  # [win]
     # test_moran_local_mv uses 'geodatasets' package which is not available
     - pytest --ignore={{ test_path }}/test_moran_local_mv.py -k "not {{ deselect_tests }}" {{ test_path }}
   requires:
