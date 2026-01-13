@@ -49,6 +49,9 @@ requirements:
 {% set deselect_tests = deselect_tests + " and not test_isolation_valid" %}
 {% set deselect_tests = deselect_tests + " and not test_to_elevation" %}
 
+{% set test_path = "${SP_DIR}/esda/tests/" %}  # [not win]
+{% set test_path = "%SP_DIR%\\esda\\tests\\" %}  # [win]
+
 test:
   source_files:
     - esda/tests/regions.zip
@@ -58,11 +61,10 @@ test:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     # For some reason regions.zip is not copying to the test directory in the site-package.
-    - cp esda/tests/regions.zip ${SP_DIR}/esda/tests/  # [not win]
-    - cp esda/tests/regions.zip %SP_DIR%/esda/tests/  # [win]
+    - cp esda/tests/regions.zip {{ test_path }}
     
     # test_moran_local_mv uses 'geodatasets' package which is not available
-    - pytest -k '{{ deselect_tests }}' --ignore=${SP_DIR}/esda/tests/test_moran_local_mv.py ${SP_DIR}/esda/tests
+    - pytest -k '{{ deselect_tests }}' --ignore={{ test_path }}test_moran_local_mv.py ${SP_DIR}/esda/tests
   requires:
     - pip
     - pytest
