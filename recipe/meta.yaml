@@ -60,8 +60,9 @@ test:
     # For some reason regions.zip is not copying to the test directory in the site-package.
     - cp esda/tests/regions.zip ${SP_DIR}/esda/tests/  # [not win]
     - cp esda/tests/regions.zip %SP_DIR%/esda/tests/  # [win]
-    # Test test_moran_local_mv imports 'geodatasets' package which we don't have available.
-    - pytest -k '{{ deselect_tests }}' --ignore=test_moran_local_mv.py ${SP_DIR}/esda/tests
+    
+    # test_moran_local_mv uses 'geodatasets' package which is not available
+    - pytest -k '{{ deselect_tests }}' --ignore=${SP_DIR}/esda/tests/test_moran_local_mv.py ${SP_DIR}/esda/tests
   requires:
     - pip
     - pytest
