@@ -41,16 +41,20 @@ requirements:
     - rtree >=1.1
     - seaborn >=0.12
 
+{% set test_path = "${SP_DIR}/esda/tests" %}  # [not win]
+{% set test_path = "%SP_DIR%\\esda\\tests" %}  # [win]
+
+{% set deselect_tests = "" %}
 # Issue created: https://github.com/pysal/esda/issues/361
 # E   FloatingPointError: invalid value encountered in voronoi_polygons
-{% set deselect_tests = " not test_prominence_valid" %}
-{% set deselect_tests = deselect_tests + " and not test_prominence_options" %}
-{% set deselect_tests = deselect_tests + " and not test_isolation_options" %}
-{% set deselect_tests = deselect_tests + " and not test_isolation_valid" %}
-{% set deselect_tests = deselect_tests + " and not test_to_elevation" %}
+{% set deselect_tests = deselect_tests + " --deselect=" + test_path + "/test_topo.py::TestTopo::test_prominence_valid" %}
+{% set deselect_tests = deselect_tests + " --deselect=" + test_path + "/test_topo.py::TestTopo::test_prominence_options" %}
+{% set deselect_tests = deselect_tests + " --deselect=" + test_path + "/test_topo.py::TestTopo::test_isolation_options" %}
+{% set deselect_tests = deselect_tests + " --deselect=" + test_path + "/test_topo.py::TestTopo::test_isolation_valid" %}
+{% set deselect_tests = deselect_tests + " --deselect=" + test_path + "/test_topo.py::TestTopo::test_to_elevation" %}
 
-{% set test_path = "${SP_DIR}/esda/tests/" %}  # [not win]
-{% set test_path = "%SP_DIR%\\esda\\tests\\" %}  # [win]
+# test_moran_local_mv uses 'geodatasets' package which is not available
+{% set deselect_tests = deselect_tests + " --ignore="   + test_path + "/test_topo.py::TestTopo::test_to_elevation" %}
 
 test:
   source_files:
@@ -61,10 +65,9 @@ test:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     # For some reason regions.zip is not copying to the test directory in the site-package.
-    - cp esda/tests/regions.zip {{ test_path }}
-    
+    - cp esda/tests/regions.zip {{ test_path }}/
     # test_moran_local_mv uses 'geodatasets' package which is not available
-    - pytest -k '{{ deselect_tests }}' --ignore={{ test_path }}test_moran_local_mv.py ${SP_DIR}/esda/tests
+    - pytest {{ deselect_tests }} {{ test_path }}
   requires:
     - pip
     - pytest
