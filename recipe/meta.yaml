@@ -1,18 +1,8 @@
 {% set name = "esda" %}
 {% set version = "2.10.0" %}
-{% set test_path = "${SP_DIR}/esda/tests" %}  # [not win]
-{% set test_path = "%SP_DIR%\esda	ests" %}  # [win]
-{% set deselect_tests = "" %}
-{% set deselect_tests = " not test_prominence_valid" %}
-{% set deselect_tests = deselect_tests + " and not test_prominence_options" %}
-{% set deselect_tests = deselect_tests + " and not test_isolation_options" %}
-{% set deselect_tests = deselect_tests + " and not test_isolation_valid" %}
-{% set deselect_tests = deselect_tests + " and not test_to_elevation" %}
 
-# Issue created: https://github.com/pysal/esda/issues/361
-# E   FloatingPointError: invalid value encountered in voronoi_polygons
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -29,12 +19,11 @@ build:
 requirements:
   host:
     - python
+    - pip
     - setuptools >=61.0
     # setuptools_scm[toml] >=6.2
     - setuptools_scm >=6.2
     - toml
-    - pip
-    - setuptools-scm >=6.2
   run:
     - python
     - geopandas >=1.0
@@ -45,12 +34,23 @@ requirements:
     - scipy >=1.14
     - shapely >=2.1
   run_constrained:
-    - blas=*=openblas  # [osx and x86_64]
+    # plus
     - matplotlib-base >=3.10
     - numba >=0.61
     - rtree >=1.3
     - seaborn >=0.13
 
+# Issue created: https://github.com/pysal/esda/issues/361
+# E   FloatingPointError: invalid value encountered in voronoi_polygons
+{% set deselect_tests = "" %}
+{% set deselect_tests = " not test_prominence_valid" %}
+{% set deselect_tests = deselect_tests + " and not test_prominence_options" %}
+{% set deselect_tests = deselect_tests + " and not test_isolation_options" %}
+{% set deselect_tests = deselect_tests + " and not test_isolation_valid" %}
+{% set deselect_tests = deselect_tests + " and not test_to_elevation" %}
+
+{% set test_path = "${SP_DIR}/esda/tests" %}  # [not win]
+{% set test_path = "%SP_DIR%\esda	ests" %}  # [win]
 test:
   source_files:
     - esda/tests/regions.zip
