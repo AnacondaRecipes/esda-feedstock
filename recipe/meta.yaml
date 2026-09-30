@@ -1,58 +1,56 @@
 {% set name = "esda" %}
-{% set version = "2.8.1" %}
+{% set version = "2.10.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/pysal/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 93e2736bb1071d875f464acb9f04ddac803bbedc5b6febfcadcedfd3edf91cd3
+  sha256: baeb98619c756a11f3de5bca246a7234d35fbd88d68e3f604120e5ed6a39a48c
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
-  skip: True  # [py<311]
+  skip: true  # [py<312]
 
 requirements:
   host:
     - python
-    - wheel
+    - pip
     - setuptools >=61.0
     # setuptools_scm[toml] >=6.2
     - setuptools_scm >=6.2
     - toml
-    - pip
   run:
     - python
-    - geopandas >=0.14
+    - geopandas >=1.0
     - libpysal >=4.12
-    - numpy >=1.26
-    - pandas >=2.1
-    - scikit-learn >=1.4
-    - scipy >=1.12
+    - numpy >=2.1
+    - pandas >=2.3
+    - scikit-learn >=1.6
+    - scipy >=1.14
     - shapely >=2.1
   run_constrained:
-    - blas=*=openblas  # [osx and x86_64]
-    - matplotlib-base >=3.8
-    - numba >=0.58
-    - rtree >=1.1
-    - seaborn >=0.12
+    # plus
+    - matplotlib-base >=3.10
+    - numba >=0.61
+    - rtree >=1.3
+    - seaborn >=0.13
 
-{% set test_path = "${SP_DIR}/esda/tests" %}  # [not win]
-{% set test_path = "%SP_DIR%\\esda\\tests" %}  # [win]
-
-{% set deselect_tests = "" %}
 # Issue created: https://github.com/pysal/esda/issues/361
 # E   FloatingPointError: invalid value encountered in voronoi_polygons
+{% set deselect_tests = "" %}
 {% set deselect_tests = " not test_prominence_valid" %}
 {% set deselect_tests = deselect_tests + " and not test_prominence_options" %}
 {% set deselect_tests = deselect_tests + " and not test_isolation_options" %}
 {% set deselect_tests = deselect_tests + " and not test_isolation_valid" %}
 {% set deselect_tests = deselect_tests + " and not test_to_elevation" %}
 
+{% set test_path = "${SP_DIR}/esda/tests" %}  # [not win]
+{% set test_path = "%SP_DIR%\\esda\\tests" %}  # [win]
 test:
   source_files:
     - esda/tests/regions.zip
@@ -77,7 +75,7 @@ about:
   license_file: LICENSE.txt
   summary: Exploratory Spatial Data Analysis
   description: |
-    ESDA is an open-source Python library for the exploratory analysis of spatial data. 
+    ESDA is an open-source Python library for the exploratory analysis of spatial data.
     A subpackage of PySAL (Python Spatial Analysis Library), it is under active development and includes methods for global and local spatial autocorrelation analysis.
   dev_url: https://github.com/pysal/esda
   doc_url: https://pysal.org/esda
